@@ -96,3 +96,7 @@ int LPControlSystem(double S1, double S2, double Eps)
 		}
 	}
 }
+double Correction(double vn1, double S)
+{
+	return vn1 + S * 16;
+}

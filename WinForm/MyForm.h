@@ -320,7 +320,7 @@ namespace WinForm {
 			this->h_Text->Name = L"h_Text";
 			this->h_Text->Size = System::Drawing::Size(100, 20);
 			this->h_Text->TabIndex = 36;
-			this->h_Text->Text = L"0,1";
+			this->h_Text->Text = L"0,001";
 			// 
 			// label8
 			// 
@@ -339,7 +339,7 @@ namespace WinForm {
 			this->Epsilon_Text->Name = L"Epsilon_Text";
 			this->Epsilon_Text->Size = System::Drawing::Size(100, 20);
 			this->Epsilon_Text->TabIndex = 34;
-			this->Epsilon_Text->Text = L"0,001";
+			this->Epsilon_Text->Text = L"0,01";
 			// 
 			// label7
 			// 
@@ -667,8 +667,8 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	PointPairList^ f3_list = gcnew PointPairList();
 
 	double x = 0.0;
-	double v1 = 10.0;
-	double v2 = 0.0;
+	double v1 = 0.1;
+	double v2 = 0.2;
 	double h = Convert::ToDouble(h_Text->Text);
 	double Epsilon = Convert::ToDouble(Epsilon_Text->Text);
 	double b = Convert::ToDouble(b_Text->Text);
@@ -749,113 +749,121 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 			k = LPControlSystem(S1, S2, Epsilon);
 			if (k == -1)
 			{
-			while (k == -1)
-			{
-			h = h*0.5;
-			c1++;
-			v1plus1 = RK4System(x, v1, v2, h, 1);
-			v2plus1 = RK4System(x, v1, v2, h, 2);
-			v1cap = Vn1capSystem(x, v1, v2, h, 1);
-			v2cap = Vn1capSystem(x, v1, v2, h, 2);
-			S1 = CS(v1cap, v1plus1);
-			S2 = CS(v2cap, v2plus1);
-			k = LPControlSystem(S1, S2, Epsilon);
-			}
+				while (k == -1)
+				{
+					h = h*0.5;
+					c1++;
+					v1plus1 = RK4System(x, v1, v2, h, 1);
+					v2plus1 = RK4System(x, v1, v2, h, 2);
+					v1cap = Vn1capSystem(x, v1, v2, h, 1);
+					v2cap = Vn1capSystem(x, v1, v2, h, 2);
+					S1 = CS(v1cap, v1plus1);
+					S2 = CS(v2cap, v2plus1);
+					k = LPControlSystem(S1, S2, Epsilon);
+				}
 			}
 			if (k == 1)
 			{
-			x = xInc(x, h);
+				x = xInc(x, h);
 
-			if (h > maxH)
-			{
-			maxH = h;
-			xmaxH = x;
-			}
-			if (h < minH)
-			{
-			minH = h;
-			xminH = x;
-			}
-			if (abs(S1) > maxS1)
-			{
-			maxS1 = abs(S1);
-			}
-			if (abs(S2) > maxS2)
-			{
-			maxS2 = abs(S2);
-			}
-			if ((i < n) || (x <= b))
-			{
-			sub = b - x;
-			}
+				if (h > maxH)
+				{
+					maxH = h;
+					xmaxH = x;
+				}
+				if (h < minH)
+				{
+					minH = h;
+					xminH = x;
+				}
+				if (abs(S1) > maxS1)
+				{
+					maxS1 = abs(S1);
+				}
+				if (abs(S2) > maxS2)
+				{
+					maxS2 = abs(S2);
+				}
+				if ((i < n) || (x <= b))
+				{
+					sub = b - x;
+				}
 
-			dataGridView3->Rows->Add();
-			dataGridView3->Rows[i]->Cells[0]->Value = i;
-			dataGridView3->Rows[i]->Cells[1]->Value = x;
-			dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-			dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-			dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-			dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-			dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-			dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-			dataGridView3->Rows[i]->Cells[8]->Value = S1;
-			dataGridView3->Rows[i]->Cells[9]->Value = S2;
-			dataGridView3->Rows[i]->Cells[10]->Value = h;
-			dataGridView3->Rows[i]->Cells[11]->Value = c1;
-			dataGridView3->Rows[i]->Cells[12]->Value = c2;
+				dataGridView3->Rows->Add();
+				dataGridView3->Rows[i]->Cells[0]->Value = i;
+				dataGridView3->Rows[i]->Cells[1]->Value = x;
+				dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
+				dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
+				dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
+				dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
+				dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
+				dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
+				dataGridView3->Rows[i]->Cells[8]->Value = S1;
+				dataGridView3->Rows[i]->Cells[9]->Value = S2;
+				dataGridView3->Rows[i]->Cells[10]->Value = h;
+				dataGridView3->Rows[i]->Cells[11]->Value = c1;
+				dataGridView3->Rows[i]->Cells[12]->Value = c2;
 
-			h = 2 * h;
-			if (i != n - 1)
-			{
-			c2++;
-			}
-			v1 = v1cap;
-			v2 = v2cap;
+				h = 2 * h;
+				if (i != n - 1)
+				{
+					c2++;
+				}
+				v1 = Correction(v1plus1, S1);
+				v2 = Correction(v2plus1, S2);
+
+				f1_list->Add(x, v1);
+				f2_list->Add(x, v2);
+				f3_list->Add(x, PhP(v1, v2));
 			}
 			else
 			{
-			x = xInc(x, h);
+				x = xInc(x, h);
 
-			if (h > maxH)
-			{
-			maxH = h;
-			xmaxH = x;
-			}
-			if (h < minH)
-			{
-			minH = h;
-			xminH = x;
-			}
-			if (abs(S1) > maxS1)
-			{
-			maxS1 = abs(S1);
-			}
-			if (abs(S2) > maxS2)
-			{
-			maxS2 = abs(S2);
-			}
-			if ((i < n) || (x <= b))
-			{
-			sub = b - x;
-			}
+				if (h > maxH)
+				{
+					maxH = h;
+					xmaxH = x;
+				}
+				if (h < minH)
+				{
+					minH = h;
+					xminH = x;
+				}
+				if (abs(S1) > maxS1)
+				{
+					maxS1 = abs(S1);
+				}
+				if (abs(S2) > maxS2)
+				{
+					maxS2 = abs(S2);
+				}
+				if ((i < n) || (x <= b))
+				{
+					sub = b - x;
+				}
 
-			dataGridView3->Rows->Add();
-			dataGridView3->Rows[i]->Cells[0]->Value = i;
-			dataGridView3->Rows[i]->Cells[1]->Value = x;
-			dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-			dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-			dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-			dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-			dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-			dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-			dataGridView3->Rows[i]->Cells[8]->Value = S1;
-			dataGridView3->Rows[i]->Cells[9]->Value = S2;
-			dataGridView3->Rows[i]->Cells[10]->Value = h;
-			dataGridView3->Rows[i]->Cells[11]->Value = c1;
-			dataGridView3->Rows[i]->Cells[12]->Value = c2;
+				dataGridView3->Rows->Add();
+				dataGridView3->Rows[i]->Cells[0]->Value = i;
+				dataGridView3->Rows[i]->Cells[1]->Value = x;
+				dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
+				dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
+				dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
+				dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
+				dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
+				dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
+				dataGridView3->Rows[i]->Cells[8]->Value = S1;
+				dataGridView3->Rows[i]->Cells[9]->Value = S2;
+				dataGridView3->Rows[i]->Cells[10]->Value = h;
+				dataGridView3->Rows[i]->Cells[11]->Value = c1;
+				dataGridView3->Rows[i]->Cells[12]->Value = c2;
 
-			v1 = v1cap;
-			v2 = v2cap;
+				v1 = Correction(v1plus1, S1);
+				v2 = Correction(v2plus1, S2);
+
+				f1_list->Add(x, v1);
+				f2_list->Add(x, v2);
+				f3_list->Add(x, PhP(v1, v2));
 			}
 			//---------------------------------------------------------------
 		}

@@ -7,3 +7,4 @@ double xInc(double x, double h);
 double PhP(double u1, double u2);
 double CS(double _vn1cap, double _vn1);
 int LPControlSystem(double S1, double S2, double Eps);
+double Correction(double vn1, double S);
