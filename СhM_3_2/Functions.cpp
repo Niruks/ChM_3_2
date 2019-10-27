@@ -39,15 +39,8 @@ double Vn1capSystem(double xn, double vn1, double vn2, double h, int m)
 {
 	double v1n12, v2n12, xn12, vn1cap;
 
-	v1n12 = RK4System(xn, vn1, vn2, h / 2.0, m);
-	if (m == 1)
-	{
-		v2n12 = RK4System(xn, vn1, vn2, h / 2.0, 2);
-	}
-	else
-	{
-		v2n12 = RK4System(xn, vn1, vn2, h / 2.0, 1);
-	}
+	v1n12 = RK4System(xn, vn1, vn2, h / 2.0, 1);
+	v2n12 = RK4System(xn, vn1, vn2, h / 2.0, 2);
 	xn12 = xInc(xn, h / 2.0);
 	vn1cap = RK4System(xn12, v1n12, v2n12, h / 2.0, m);
 

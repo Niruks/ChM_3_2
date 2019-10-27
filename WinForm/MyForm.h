@@ -83,6 +83,8 @@ namespace WinForm {
 	private: ZedGraph::ZedGraphControl^  PhasePortrait;
 	private: ZedGraph::ZedGraphControl^  U2Graph;
 	private: ZedGraph::ZedGraphControl^  U1Graph;
+	private: System::Windows::Forms::Label^  label2;
+	private: System::Windows::Forms::TextBox^  Border_text;
 
 	private:
 		/// <summary>
@@ -100,6 +102,8 @@ namespace WinForm {
 			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
+			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->Border_text = (gcnew System::Windows::Forms::TextBox());
 			this->button7 = (gcnew System::Windows::Forms::Button());
 			this->textBox3 = (gcnew System::Windows::Forms::TextBox());
 			this->dataGridView3 = (gcnew System::Windows::Forms::DataGridView());
@@ -160,6 +164,8 @@ namespace WinForm {
 			// 
 			// tabPage1
 			// 
+			this->tabPage1->Controls->Add(this->label2);
+			this->tabPage1->Controls->Add(this->Border_text);
 			this->tabPage1->Controls->Add(this->button7);
 			this->tabPage1->Controls->Add(this->textBox3);
 			this->tabPage1->Controls->Add(this->dataGridView3);
@@ -180,15 +186,34 @@ namespace WinForm {
 			this->tabPage1->Text = L"Вычисления";
 			this->tabPage1->UseVisualStyleBackColor = true;
 			// 
+			// label2
+			// 
+			this->label2->AutoSize = true;
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label2->Location = System::Drawing::Point(688, 75);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(203, 16);
+			this->label2->TabIndex = 69;
+			this->label2->Text = L" Параметр выхода на границу";
+			// 
+			// Border_text
+			// 
+			this->Border_text->Location = System::Drawing::Point(897, 74);
+			this->Border_text->Name = L"Border_text";
+			this->Border_text->Size = System::Drawing::Size(100, 20);
+			this->Border_text->TabIndex = 68;
+			this->Border_text->Text = L"0,01";
+			// 
 			// button7
 			// 
 			this->button7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->button7->Location = System::Drawing::Point(752, 74);
+			this->button7->Location = System::Drawing::Point(834, 6);
 			this->button7->Name = L"button7";
 			this->button7->Size = System::Drawing::Size(160, 48);
 			this->button7->TabIndex = 67;
-			this->button7->Text = L"Старт";
+			this->button7->Text = L"Вычислить";
 			this->button7->UseVisualStyleBackColor = true;
 			this->button7->Click += gcnew System::EventHandler(this, &MyForm::button7_Click);
 			// 
@@ -296,22 +321,22 @@ namespace WinForm {
 			// 
 			// b_Text
 			// 
-			this->b_Text->Location = System::Drawing::Point(586, 74);
+			this->b_Text->Location = System::Drawing::Point(586, 73);
 			this->b_Text->Name = L"b_Text";
 			this->b_Text->Size = System::Drawing::Size(100, 20);
 			this->b_Text->TabIndex = 38;
-			this->b_Text->Text = L"2";
+			this->b_Text->Text = L"1";
 			// 
 			// label6
 			// 
 			this->label6->AutoSize = true;
 			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->label6->Location = System::Drawing::Point(6, 70);
+			this->label6->Location = System::Drawing::Point(42, 74);
 			this->label6->Name = L"label6";
-			this->label6->Size = System::Drawing::Size(147, 16);
+			this->label6->Size = System::Drawing::Size(111, 16);
 			this->label6->TabIndex = 37;
-			this->label6->Text = L"Шаг интегрирования ";
+			this->label6->Text = L"Начальный шаг ";
 			this->label6->Click += gcnew System::EventHandler(this, &MyForm::label6_Click);
 			// 
 			// h_Text
@@ -320,7 +345,7 @@ namespace WinForm {
 			this->h_Text->Name = L"h_Text";
 			this->h_Text->Size = System::Drawing::Size(100, 20);
 			this->h_Text->TabIndex = 36;
-			this->h_Text->Text = L"0,001";
+			this->h_Text->Text = L"0,0000001";
 			// 
 			// label8
 			// 
@@ -358,7 +383,7 @@ namespace WinForm {
 			this->n_Text->Name = L"n_Text";
 			this->n_Text->Size = System::Drawing::Size(100, 20);
 			this->n_Text->TabIndex = 32;
-			this->n_Text->Text = L"1000";
+			this->n_Text->Text = L"100000";
 			// 
 			// pictureBox1
 			// 
@@ -642,7 +667,7 @@ private: System::Void button10_Click_1(System::Object^  sender, System::EventArg
 }
 private: System::Void button7_Click(System::Object^  sender, System::EventArgs^  e) 
 {
-	GraphPane^ panel1 = U1Graph->GraphPane;
+    GraphPane^ panel1 = U1Graph->GraphPane;
 	GraphPane^ panel2 = U2Graph->GraphPane;
 	GraphPane^ panel3 = PhasePortrait->GraphPane;
 
@@ -667,8 +692,8 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	PointPairList^ f3_list = gcnew PointPairList();
 
 	double x = 0.0;
-	double v1 = 0.1;
-	double v2 = 0.2;
+	double v1 = 10.0;
+	double v2 = 0.0;
 	double h = Convert::ToDouble(h_Text->Text);
 	double Epsilon = Convert::ToDouble(Epsilon_Text->Text);
 	double b = Convert::ToDouble(b_Text->Text);
@@ -676,6 +701,7 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	double v1cap, v2cap;
 	double S1, S2;
 	double sub;
+	double border = b - Convert::ToDouble(Border_text->Text);
 	int n = Convert::ToInt32(n_Text->Text);
 	int i;
 	int c1 = 0, c2 = 0;
@@ -683,7 +709,11 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	double maxH = h, minH = h, maxS1 = 0.0, xmaxH = 0.0, xminH = 0.0, maxS2 = 0.0;
 	string ref = "";
 
-	double xmin_limit = x - 0.05;
+	double xmin_limit = x - 0.01;
+	double v1min_limit = v1;
+	double v2min_limit = v2;
+	double v1max_limit = v1;
+	double v2max_limit = v2;
 
 	dataGridView3->Rows->Clear();
 
@@ -698,11 +728,7 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 			S1 = CS(v1cap, v1plus1);
 			S2 = CS(v2cap, v2plus1);
 			//Без контроля локальной погрешности-----------------
-			/*x = xInc(x, h);
-
-			f1_list->Add(x, v1plus1);
-			f2_list->Add(x, v2plus1);
-			f3_list->Add(x, PhP(v1plus1, v2plus1));
+			/*x = xInc(x, h);			
 
 			if (h > maxH)
 			{
@@ -743,7 +769,30 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 			dataGridView3->Rows[i]->Cells[12]->Value = c2;
 
 			v1 = v1plus1;
-			v2 = v2plus1;*/
+			v2 = v2plus1;
+			f1_list->Add(x, v1);
+			f2_list->Add(x, v2);
+			f3_list->Add(v1, v2);
+			if (v1 < v1min_limit)
+			{
+				v1min_limit = v1;
+			}
+			if (v1 > v1max_limit)
+			{
+				v1max_limit = v1;
+			}
+			if (v2 < v2min_limit)
+			{
+				v2min_limit = v2;
+			}
+			if (v2 > v2max_limit)
+			{
+				v2max_limit = v2;
+			}
+			if ((x >= border) && (x <= b))
+					{
+						break;
+					}*/
 			//---------------------------------------------------
 			//С контролем локальной погрешности------------------
 			k = LPControlSystem(S1, S2, Epsilon);
@@ -809,12 +858,34 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 				{
 					c2++;
 				}
-				v1 = Correction(v1plus1, S1);
-				v2 = Correction(v2plus1, S2);
+				//v1 = Correction(v1plus1, S1);
+				//v2 = Correction(v2plus1, S2);
+				v1 = v1cap;
+				v2 = v2cap;
 
 				f1_list->Add(x, v1);
 				f2_list->Add(x, v2);
-				f3_list->Add(x, PhP(v1, v2));
+				f3_list->Add(v1, v2);
+				if (v1 < v1min_limit)
+				{
+					v1min_limit = v1;
+				}
+				if (v1 > v1max_limit)
+				{
+					v1max_limit = v1;
+				}
+				if (v2 < v2min_limit)
+				{
+					v2min_limit = v2;
+				}
+				if (v2 > v2max_limit)
+				{
+					v2max_limit = v2;
+				}
+				if ((x >= border) && (x <= b))
+				{
+					break;
+				}
 			}
 			else
 			{
@@ -858,12 +929,35 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 				dataGridView3->Rows[i]->Cells[11]->Value = c1;
 				dataGridView3->Rows[i]->Cells[12]->Value = c2;
 
-				v1 = Correction(v1plus1, S1);
-				v2 = Correction(v2plus1, S2);
+				/*v1 = Correction(v1plus1, S1);
+				v2 = Correction(v2plus1, S2);*/
+
+				v1 = v1cap;
+				v2 = v2cap;
 
 				f1_list->Add(x, v1);
 				f2_list->Add(x, v2);
-				f3_list->Add(x, PhP(v1, v2));
+				f3_list->Add(v1, v2);
+				if (v1 < v1min_limit)
+				{
+					v1min_limit = v1;
+				}
+				if (v1 > v1max_limit)
+				{
+					v1max_limit = v1;
+				}
+				if (v2 < v2min_limit)
+				{
+					v2min_limit = v2;
+				}
+				if (v2 > v2max_limit)
+				{
+					v2max_limit = v2;
+				}
+				if ((x >= border) && (x <= b))
+				{
+					break;
+				}
 			}
 			//---------------------------------------------------------------
 		}
@@ -871,7 +965,7 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 		{
 			f1_list->Add(x, v1);
 			f2_list->Add(x, v2);
-			f3_list->Add(x, PhP(v1, v2));
+			f3_list->Add(v1, v2);
 
 			v1cap = v1;
 			v2cap = v2;
@@ -894,7 +988,11 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 			dataGridView3->Rows[i]->Cells[12]->Value = c2;
 		}
 	}
-	double xmax_limit = x + 0.05;
+	double xmax_limit = x + 0.01;
+	v1min_limit -= 0.5;
+	v1max_limit += 0.5;
+	v2min_limit -= 0.5;
+	v2max_limit += 0.5;
 
 	LineItem Curve1 = panel1->AddCurve("Численное решение U1(x)", f1_list, Color::Red, SymbolType::None);
 	LineItem Curve2 = panel2->AddCurve("Численное решение U2(x)", f2_list, Color::Blue, SymbolType::None);
@@ -906,8 +1004,10 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	panel2->XAxis->Min = xmin_limit;
 	panel2->XAxis->Max = xmax_limit;
 
-	panel3->XAxis->Min = xmin_limit;
-	panel3->XAxis->Max = xmax_limit;
+	panel3->XAxis->Min = v1min_limit;
+	panel3->XAxis->Max = v1max_limit;
+	panel3->YAxis->Min = v2min_limit;
+	panel3->YAxis->Max = v2max_limit;
 
 	U1Graph->AxisChange();
 	U1Graph->Invalidate();
@@ -943,14 +1043,14 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	ref += str;
 	ref += "\r\n";
 	ref += "max hi=";
-	sprintf_s(str, "%.6lf", maxH);
+	sprintf_s(str, "%.6e", maxH);
 	ref += str;
 	ref += " при x=";
 	sprintf_s(str, "%.4lf", xmaxH);
 	ref += str;
 	ref += "\r\n";
 	ref += "min hi=";
-	sprintf_s(str, "%.6lf", minH);
+	sprintf_s(str, "%.6e", minH);
 	ref += str;
 	ref += " при x=";
 	sprintf_s(str, "%.4lf", xminH);
