@@ -8,3 +8,8 @@ double PhP(double u1, double u2);
 double CS(double _vn1cap, double _vn1);
 int LPControlSystem(double S1, double S2, double Eps);
 double Correction(double vn1, double S);
+double RK4(double x, double vn, double h);
+double f1test(double u);
+double f1Accurate(double u0, double x);
+double Vn1cap(double xn, double vn, double h);
+int LPControl(double S, double Eps);

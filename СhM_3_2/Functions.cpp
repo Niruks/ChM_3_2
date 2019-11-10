@@ -93,3 +93,57 @@ double Correction(double vn1, double S)
 {
 	return vn1 + S * 16;
 }
+
+double RK4(double x, double vn, double h)
+{
+	double vnplus1, k1, k2, k3, k4;
+	
+		k1 = f1test(vn);
+		k2 = f1test(vn + (h / 4.0)*k1);
+		k3 = f1test(vn + (h / 2.0)*k2);
+		k4 = f1test(vn + h*(k1 - 2 * k2 + 2 * k3));
+	
+	vnplus1 = vn + (h / 6.0)*(k1 + 4 * k3 + k4);
+
+	return vnplus1;
+}
+
+double f1test(double u)
+{
+	return -u*1.5;
+}
+
+double f1Accurate(double u0, double x)
+{
+	return u0*exp(-x*1.5);
+}
+
+double Vn1cap(double xn, double vn, double h)
+{
+	double vn12, xn12, vn1cap;
+
+	vn12 = RK4(xn, vn, h / 2.0);
+	xn12 = xInc(xn, h / 2.0);
+	vn1cap = RK4(xn12, vn12, h / 2.0);
+
+	return vn1cap;
+}
+
+int LPControl(double S, double Eps)
+{
+	if (abs(S) > Eps)
+	{
+		return -1;
+	}
+	else
+	{
+		if (abs(S) < Eps / 32.0)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+}
