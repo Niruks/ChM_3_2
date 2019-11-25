@@ -1107,17 +1107,17 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	panel2->CurveList->Clear();
 	panel3->CurveList->Clear();
 
-	panel1->Title = "1.График U(x)";
-	panel1->XAxis->Title = "X";
-	panel1->YAxis->Title = "U(x)";
+	panel1->Title = "1.Зависимость отклонения от времени";
+	panel1->XAxis->Title = "Время";
+	panel1->YAxis->Title = "Отклонение";
 
-	panel2->Title = "2.График U'(x)";
-	panel2->XAxis->Title = "X";
-	panel2->YAxis->Title = "U'(x)";
+	panel2->Title = "2.Зависимость скорости от времени";
+	panel2->XAxis->Title = "Время";
+	panel2->YAxis->Title = "Скорость";
 
-	panel3->Title = "3.Фазовый портрет";
-	panel3->XAxis->Title = "U";
-	panel3->YAxis->Title = "U'";
+	panel3->Title = "3.Зависимость скорости от отклонения";
+	panel3->XAxis->Title = "Отклонение";
+	panel3->YAxis->Title = "Скорость";
 
 	PointPairList^ f1_list = gcnew PointPairList();
 	PointPairList^ f2_list = gcnew PointPairList();
@@ -1714,14 +1714,14 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	sprintf_s(str, "%.6e", maxH);
 	ref += str;
 	ref += " при x=";
-	sprintf_s(str, "%.4lf", xmaxH);
+	sprintf_s(str, "%.4e", xmaxH);
 	ref += str;
 	ref += "\r\n";
 	ref += "min hi=";
 	sprintf_s(str, "%.6e", minH);
 	ref += str;
 	ref += " при x=";
-	sprintf_s(str, "%.4lf", xminH);
+	sprintf_s(str, "%.4e", xminH);
 	ref += str;
 	ref += "\r\n";
 	textBox3->Text = gcnew String(ref.c_str());
