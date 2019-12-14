@@ -1124,14 +1124,13 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	PointPairList^ f3_list = gcnew PointPairList();
 
 	double x = 0.0;
-	double v1 = 10.0;
-	double v2 = 0.0;
+	double *v;
 	double h = Convert::ToDouble(h_Text->Text);
 	double Epsilon = Convert::ToDouble(Epsilon_Text->Text);
 	double b = Convert::ToDouble(b_Text->Text);
-	double v1plus1, v2plus1;
-	double v1cap, v2cap;
-	double S1, S2;
+	double *vplus1;
+	double *vcap;
+	double *S;
 	double sub;
 	double border = b - Convert::ToDouble(Border_text->Text);
 	int n = Convert::ToInt32(n_Text->Text);
@@ -1141,11 +1140,18 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	double maxH = h, minH = h, maxS1 = 0.0, xmaxH = 0.0, xminH = 0.0, maxS2 = 0.0;
 	string ref = "";
 
+	v = new double[2];
+	vplus1 = new double[2];
+	vcap = new double[2];
+	S = new double[2];
+	v[0] = 10.0;
+	v[1] = 0.0;
+
 	double xmin_limit = x - 0.01;
-	double v1min_limit = v1;
-	double v2min_limit = v2;
-	double v1max_limit = v1;
-	double v2max_limit = v2;
+	double v1min_limit = v[0];
+	double v2min_limit = v[1];
+	double v1max_limit = v[0];
+	double v2max_limit = v[1];
 
 	dataGridView3->Rows->Clear();
 
@@ -1153,12 +1159,9 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	{		
 		if (i != 0)
 		{
-			v1plus1 = RK4System(x, v1, v2, h, 1);
-			v2plus1 = RK4System(x, v1, v2, h, 2);
-			v1cap = Vn1capSystem(x, v1, v2, h, 1);
-			v2cap = Vn1capSystem(x, v1, v2, h, 2);
-			S1 = CS(v1cap, v1plus1);
-			S2 = CS(v2cap, v2plus1);
+			vplus1 = RK4System(x, v, h);			
+			vcap = Vn1capSystem(x, v, h);			
+			S = CS(vcap, vplus1);			
 
 			if (checkBox1->Checked == false)
 			{
@@ -1174,13 +1177,13 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 					minH = h;
 					xminH = x;
 				}
-				if (abs(S1) > maxS1)
+				if (abs(S[0]) > maxS1)
 				{
-					maxS1 = abs(S1);
+					maxS1 = abs(S[0]);
 				}
-				if (abs(S2) > maxS2)
+				if (abs(S[1]) > maxS2)
 				{
-					maxS2 = abs(S2);
+					maxS2 = abs(S[1]);
 				}
 				if ((i < n) || (x <= b))
 				{
@@ -1190,38 +1193,38 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 				dataGridView3->Rows->Add();
 				dataGridView3->Rows[i]->Cells[0]->Value = i;
 				dataGridView3->Rows[i]->Cells[1]->Value = x;
-				dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-				dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-				dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-				dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-				dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-				dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-				dataGridView3->Rows[i]->Cells[8]->Value = S1;
-				dataGridView3->Rows[i]->Cells[9]->Value = S2;
+				dataGridView3->Rows[i]->Cells[2]->Value = vplus1[0];
+				dataGridView3->Rows[i]->Cells[3]->Value = vplus1[1];
+				dataGridView3->Rows[i]->Cells[4]->Value = vcap[0];
+				dataGridView3->Rows[i]->Cells[5]->Value = vcap[1];
+				dataGridView3->Rows[i]->Cells[6]->Value = vplus1[0] - vcap[0];
+				dataGridView3->Rows[i]->Cells[7]->Value = vplus1[1] - vcap[1];
+				dataGridView3->Rows[i]->Cells[8]->Value = S[0];
+				dataGridView3->Rows[i]->Cells[9]->Value = S[1];
 				dataGridView3->Rows[i]->Cells[10]->Value = h;
 				dataGridView3->Rows[i]->Cells[11]->Value = c1;
 				dataGridView3->Rows[i]->Cells[12]->Value = c2;
 
-				v1 = v1plus1;
-				v2 = v2plus1;
-				f1_list->Add(x, v1);
-				f2_list->Add(x, v2);
-				f3_list->Add(v1, v2);
-				if (v1 < v1min_limit)
+				v = vplus1;
+
+				f1_list->Add(x, v[0]);
+				f2_list->Add(x, v[1]);
+				f3_list->Add(v[0], v[1]);
+				if (v[0] < v1min_limit)
 				{
-					v1min_limit = v1;
+					v1min_limit = v[0];
 				}
-				if (v1 > v1max_limit)
+				if (v[0] > v1max_limit)
 				{
-					v1max_limit = v1;
+					v1max_limit = v[0];
 				}
-				if (v2 < v2min_limit)
+				if (v[1] < v2min_limit)
 				{
-					v2min_limit = v2;
+					v2min_limit = v[1];
 				}
-				if (v2 > v2max_limit)
+				if (v[1] > v2max_limit)
 				{
-					v2max_limit = v2;
+					v2max_limit = v[1];
 				}
 				if ((x >= border) && (x <= b))
 				{
@@ -1230,20 +1233,17 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 			}
 			else
 			{
-				k = LPControlSystem(S1, S2, Epsilon);
+				k = LPControlSystem(S, Epsilon);
 				if (k == -1)
 				{
 					while (k == -1)
 					{
 						h = h*0.5;
 						c1++;
-						v1plus1 = RK4System(x, v1, v2, h, 1);
-						v2plus1 = RK4System(x, v1, v2, h, 2);
-						v1cap = Vn1capSystem(x, v1, v2, h, 1);
-						v2cap = Vn1capSystem(x, v1, v2, h, 2);
-						S1 = CS(v1cap, v1plus1);
-						S2 = CS(v2cap, v2plus1);
-						k = LPControlSystem(S1, S2, Epsilon);
+						vplus1 = RK4System(x, v, h);
+						vcap = Vn1capSystem(x, v, h);
+						S = CS(vcap, vplus1);
+						k = LPControlSystem(S, Epsilon);
 					}
 				}
 				if (k == 1)
@@ -1260,13 +1260,13 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 						minH = h;
 						xminH = x;
 					}
-					if (abs(S1) > maxS1)
+					if (abs(S[0]) > maxS1)
 					{
-						maxS1 = abs(S1);
+						maxS1 = abs(S[0]);
 					}
-					if (abs(S2) > maxS2)
+					if (abs(S[1]) > maxS2)
 					{
-						maxS2 = abs(S2);
+						maxS2 = abs(S[1]);
 					}
 					if ((i < n) || (x <= b))
 					{
@@ -1276,14 +1276,14 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 					dataGridView3->Rows->Add();
 					dataGridView3->Rows[i]->Cells[0]->Value = i;
 					dataGridView3->Rows[i]->Cells[1]->Value = x;
-					dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-					dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-					dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-					dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-					dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-					dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-					dataGridView3->Rows[i]->Cells[8]->Value = S1;
-					dataGridView3->Rows[i]->Cells[9]->Value = S2;
+					dataGridView3->Rows[i]->Cells[2]->Value = vplus1[0];
+					dataGridView3->Rows[i]->Cells[3]->Value = vplus1[1];
+					dataGridView3->Rows[i]->Cells[4]->Value = vcap[0];
+					dataGridView3->Rows[i]->Cells[5]->Value = vcap[1];
+					dataGridView3->Rows[i]->Cells[6]->Value = vplus1[0] - vcap[0];
+					dataGridView3->Rows[i]->Cells[7]->Value = vplus1[1] - vcap[1];
+					dataGridView3->Rows[i]->Cells[8]->Value = S[0];
+					dataGridView3->Rows[i]->Cells[9]->Value = S[1];
 					dataGridView3->Rows[i]->Cells[10]->Value = h;
 					dataGridView3->Rows[i]->Cells[11]->Value = c1;
 					dataGridView3->Rows[i]->Cells[12]->Value = c2;
@@ -1295,27 +1295,26 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 					}
 					//v1 = Correction(v1plus1, S1);
 					//v2 = Correction(v2plus1, S2);
-					v1 = v1cap;
-					v2 = v2cap;
+					v = vplus1;
 
-					f1_list->Add(x, v1);
-					f2_list->Add(x, v2);
-					f3_list->Add(v1, v2);
-					if (v1 < v1min_limit)
+					f1_list->Add(x, v[0]);
+					f2_list->Add(x, v[1]);
+					f3_list->Add(v[0], v[1]);
+					if (v[0] < v1min_limit)
 					{
-						v1min_limit = v1;
+						v1min_limit = v[0];
 					}
-					if (v1 > v1max_limit)
+					if (v[0] > v1max_limit)
 					{
-						v1max_limit = v1;
+						v1max_limit = v[0];
 					}
-					if (v2 < v2min_limit)
+					if (v[1] < v2min_limit)
 					{
-						v2min_limit = v2;
+						v2min_limit = v[1];
 					}
-					if (v2 > v2max_limit)
+					if (v[1] > v2max_limit)
 					{
-						v2max_limit = v2;
+						v2max_limit = v[1];
 					}
 					if ((x >= border) && (x <= b))
 					{
@@ -1336,13 +1335,13 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 						minH = h;
 						xminH = x;
 					}
-					if (abs(S1) > maxS1)
+					if (abs(S[0]) > maxS1)
 					{
-						maxS1 = abs(S1);
+						maxS1 = abs(S[0]);
 					}
-					if (abs(S2) > maxS2)
+					if (abs(S[1]) > maxS2)
 					{
-						maxS2 = abs(S2);
+						maxS2 = abs(S[1]);
 					}
 					if ((i < n) || (x <= b))
 					{
@@ -1352,14 +1351,14 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 					dataGridView3->Rows->Add();
 					dataGridView3->Rows[i]->Cells[0]->Value = i;
 					dataGridView3->Rows[i]->Cells[1]->Value = x;
-					dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-					dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-					dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-					dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-					dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-					dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-					dataGridView3->Rows[i]->Cells[8]->Value = S1;
-					dataGridView3->Rows[i]->Cells[9]->Value = S2;
+					dataGridView3->Rows[i]->Cells[2]->Value = vplus1[0];
+					dataGridView3->Rows[i]->Cells[3]->Value = vplus1[1];
+					dataGridView3->Rows[i]->Cells[4]->Value = vcap[0];
+					dataGridView3->Rows[i]->Cells[5]->Value = vcap[1];
+					dataGridView3->Rows[i]->Cells[6]->Value = vplus1[0] - vcap[0];
+					dataGridView3->Rows[i]->Cells[7]->Value = vplus1[1] - vcap[1];
+					dataGridView3->Rows[i]->Cells[8]->Value = S[0];
+					dataGridView3->Rows[i]->Cells[9]->Value = S[1];
 					dataGridView3->Rows[i]->Cells[10]->Value = h;
 					dataGridView3->Rows[i]->Cells[11]->Value = c1;
 					dataGridView3->Rows[i]->Cells[12]->Value = c2;
@@ -1367,290 +1366,55 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 					/*v1 = Correction(v1plus1, S1);
 					v2 = Correction(v2plus1, S2);*/
 
-					v1 = v1cap;
-					v2 = v2cap;
+					v = vplus1;
 
-					f1_list->Add(x, v1);
-					f2_list->Add(x, v2);
-					f3_list->Add(v1, v2);
-					if (v1 < v1min_limit)
+					f1_list->Add(x, v[0]);
+					f2_list->Add(x, v[1]);
+					f3_list->Add(v[0], v[1]);
+					if (v[0] < v1min_limit)
 					{
-						v1min_limit = v1;
+						v1min_limit = v[0];
 					}
-					if (v1 > v1max_limit)
+					if (v[0] > v1max_limit)
 					{
-						v1max_limit = v1;
+						v1max_limit = v[0];
 					}
-					if (v2 < v2min_limit)
+					if (v[1] < v2min_limit)
 					{
-						v2min_limit = v2;
+						v2min_limit = v[1];
 					}
-					if (v2 > v2max_limit)
+					if (v[1] > v2max_limit)
 					{
-						v2max_limit = v2;
+						v2max_limit = v[1];
 					}
 					if ((x >= border) && (x <= b))
 					{
 						break;
 					}
 				}
-			}
-			//Без контроля локальной погрешности-----------------
-			/*x = xInc(x, h);			
-
-			if (h > maxH)
-			{
-				maxH = h;
-				xmaxH = x;
-			}
-			if (h < minH)
-			{
-				minH = h;
-				xminH = x;
-			}
-			if (abs(S1) > maxS1)
-			{
-				maxS1 = abs(S1);
-			}
-			if (abs(S2) > maxS2)
-			{
-				maxS2 = abs(S2);
-			}
-			if ((i < n) || (x <= b))
-			{
-				sub = b - x;
-			}
-
-			dataGridView3->Rows->Add();
-			dataGridView3->Rows[i]->Cells[0]->Value = i;
-			dataGridView3->Rows[i]->Cells[1]->Value = x;
-			dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-			dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-			dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-			dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-			dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-			dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-			dataGridView3->Rows[i]->Cells[8]->Value = S1;
-			dataGridView3->Rows[i]->Cells[9]->Value = S2;
-			dataGridView3->Rows[i]->Cells[10]->Value = h;
-			dataGridView3->Rows[i]->Cells[11]->Value = c1;
-			dataGridView3->Rows[i]->Cells[12]->Value = c2;
-
-			v1 = v1plus1;
-			v2 = v2plus1;
-			f1_list->Add(x, v1);
-			f2_list->Add(x, v2);
-			f3_list->Add(v1, v2);
-			if (v1 < v1min_limit)
-			{
-				v1min_limit = v1;
-			}
-			if (v1 > v1max_limit)
-			{
-				v1max_limit = v1;
-			}
-			if (v2 < v2min_limit)
-			{
-				v2min_limit = v2;
-			}
-			if (v2 > v2max_limit)
-			{
-				v2max_limit = v2;
-			}
-			if ((x >= border) && (x <= b))
-					{
-						break;
-					}*/
-			//---------------------------------------------------
-			//С контролем локальной погрешности------------------
-			//k = LPControlSystem(S1, S2, Epsilon);
-			//if (k == -1)
-			//{
-			//	while (k == -1)
-			//	{
-			//		h = h*0.5;
-			//		c1++;
-			//		v1plus1 = RK4System(x, v1, v2, h, 1);
-			//		v2plus1 = RK4System(x, v1, v2, h, 2);
-			//		v1cap = Vn1capSystem(x, v1, v2, h, 1);
-			//		v2cap = Vn1capSystem(x, v1, v2, h, 2);
-			//		S1 = CS(v1cap, v1plus1);
-			//		S2 = CS(v2cap, v2plus1);
-			//		k = LPControlSystem(S1, S2, Epsilon);
-			//	}
-			//}
-			//if (k == 1)
-			//{
-			//	x = xInc(x, h);
-
-			//	if (h > maxH)
-			//	{
-			//		maxH = h;
-			//		xmaxH = x;
-			//	}
-			//	if (h < minH)
-			//	{
-			//		minH = h;
-			//		xminH = x;
-			//	}
-			//	if (abs(S1) > maxS1)
-			//	{
-			//		maxS1 = abs(S1);
-			//	}
-			//	if (abs(S2) > maxS2)
-			//	{
-			//		maxS2 = abs(S2);
-			//	}
-			//	if ((i < n) || (x <= b))
-			//	{
-			//		sub = b - x;
-			//	}
-
-			//	dataGridView3->Rows->Add();
-			//	dataGridView3->Rows[i]->Cells[0]->Value = i;
-			//	dataGridView3->Rows[i]->Cells[1]->Value = x;
-			//	dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-			//	dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-			//	dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-			//	dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-			//	dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-			//	dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-			//	dataGridView3->Rows[i]->Cells[8]->Value = S1;
-			//	dataGridView3->Rows[i]->Cells[9]->Value = S2;
-			//	dataGridView3->Rows[i]->Cells[10]->Value = h;
-			//	dataGridView3->Rows[i]->Cells[11]->Value = c1;
-			//	dataGridView3->Rows[i]->Cells[12]->Value = c2;
-
-			//	h = 2 * h;
-			//	if (i != n - 1)
-			//	{
-			//		c2++;
-			//	}
-			//	//v1 = Correction(v1plus1, S1);
-			//	//v2 = Correction(v2plus1, S2);
-			//	v1 = v1cap;
-			//	v2 = v2cap;
-
-			//	f1_list->Add(x, v1);
-			//	f2_list->Add(x, v2);
-			//	f3_list->Add(v1, v2);
-			//	if (v1 < v1min_limit)
-			//	{
-			//		v1min_limit = v1;
-			//	}
-			//	if (v1 > v1max_limit)
-			//	{
-			//		v1max_limit = v1;
-			//	}
-			//	if (v2 < v2min_limit)
-			//	{
-			//		v2min_limit = v2;
-			//	}
-			//	if (v2 > v2max_limit)
-			//	{
-			//		v2max_limit = v2;
-			//	}
-			//	if ((x >= border) && (x <= b))
-			//	{
-			//		break;
-			//	}
-			//}
-			//else
-			//{
-			//	x = xInc(x, h);
-
-			//	if (h > maxH)
-			//	{
-			//		maxH = h;
-			//		xmaxH = x;
-			//	}
-			//	if (h < minH)
-			//	{
-			//		minH = h;
-			//		xminH = x;
-			//	}
-			//	if (abs(S1) > maxS1)
-			//	{
-			//		maxS1 = abs(S1);
-			//	}
-			//	if (abs(S2) > maxS2)
-			//	{
-			//		maxS2 = abs(S2);
-			//	}
-			//	if ((i < n) || (x <= b))
-			//	{
-			//		sub = b - x;
-			//	}
-
-			//	dataGridView3->Rows->Add();
-			//	dataGridView3->Rows[i]->Cells[0]->Value = i;
-			//	dataGridView3->Rows[i]->Cells[1]->Value = x;
-			//	dataGridView3->Rows[i]->Cells[2]->Value = v1plus1;
-			//	dataGridView3->Rows[i]->Cells[3]->Value = v2plus1;
-			//	dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-			//	dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-			//	dataGridView3->Rows[i]->Cells[6]->Value = v1plus1 - v1cap;
-			//	dataGridView3->Rows[i]->Cells[7]->Value = v2plus1 - v2cap;
-			//	dataGridView3->Rows[i]->Cells[8]->Value = S1;
-			//	dataGridView3->Rows[i]->Cells[9]->Value = S2;
-			//	dataGridView3->Rows[i]->Cells[10]->Value = h;
-			//	dataGridView3->Rows[i]->Cells[11]->Value = c1;
-			//	dataGridView3->Rows[i]->Cells[12]->Value = c2;
-
-			//	/*v1 = Correction(v1plus1, S1);
-			//	v2 = Correction(v2plus1, S2);*/
-
-			//	v1 = v1cap;
-			//	v2 = v2cap;
-
-			//	f1_list->Add(x, v1);
-			//	f2_list->Add(x, v2);
-			//	f3_list->Add(v1, v2);
-			//	if (v1 < v1min_limit)
-			//	{
-			//		v1min_limit = v1;
-			//	}
-			//	if (v1 > v1max_limit)
-			//	{
-			//		v1max_limit = v1;
-			//	}
-			//	if (v2 < v2min_limit)
-			//	{
-			//		v2min_limit = v2;
-			//	}
-			//	if (v2 > v2max_limit)
-			//	{
-			//		v2max_limit = v2;
-			//	}
-			//	if ((x >= border) && (x <= b))
-			//	{
-			//		break;
-			//	}
-			//}
-			//---------------------------------------------------------------
+			}			
 		}
 		else
 		{
-			f1_list->Add(x, v1);
-			f2_list->Add(x, v2);
-			f3_list->Add(v1, v2);
+			f1_list->Add(x, v[0]);
+			f2_list->Add(x, v[1]);
+			f3_list->Add(v[0], v[1]);
 
-			v1cap = v1;
-			v2cap = v2;
-			S1 = 0.0;
-			S2 = 0.0;
+			vcap = v;
+			S[0] = 0.0;
+			S[1] = 0.0;
 
 			dataGridView3->Rows->Add();
 			dataGridView3->Rows[i]->Cells[0]->Value = i;
 			dataGridView3->Rows[i]->Cells[1]->Value = x;
-			dataGridView3->Rows[i]->Cells[2]->Value = v1;
-			dataGridView3->Rows[i]->Cells[3]->Value = v2;
-			dataGridView3->Rows[i]->Cells[4]->Value = v1cap;
-			dataGridView3->Rows[i]->Cells[5]->Value = v2cap;
-			dataGridView3->Rows[i]->Cells[6]->Value = v1 - v1cap;
-			dataGridView3->Rows[i]->Cells[7]->Value = v2 - v2cap;
-			dataGridView3->Rows[i]->Cells[8]->Value = S1;
-			dataGridView3->Rows[i]->Cells[9]->Value = S2;
+			dataGridView3->Rows[i]->Cells[2]->Value = vplus1[0];
+			dataGridView3->Rows[i]->Cells[3]->Value = vplus1[1];
+			dataGridView3->Rows[i]->Cells[4]->Value = vcap[0];
+			dataGridView3->Rows[i]->Cells[5]->Value = vcap[1];
+			dataGridView3->Rows[i]->Cells[6]->Value = vplus1[0] - vcap[0];
+			dataGridView3->Rows[i]->Cells[7]->Value = vplus1[1] - vcap[1];
+			dataGridView3->Rows[i]->Cells[8]->Value = S[0];
+			dataGridView3->Rows[i]->Cells[9]->Value = S[1];
 			dataGridView3->Rows[i]->Cells[10]->Value = h;
 			dataGridView3->Rows[i]->Cells[11]->Value = c1;
 			dataGridView3->Rows[i]->Cells[12]->Value = c2;
@@ -1724,7 +1488,7 @@ private: System::Void button7_Click(System::Object^  sender, System::EventArgs^ 
 	sprintf_s(str, "%.4e", xminH);
 	ref += str;
 	ref += "\r\n";
-	textBox3->Text = gcnew String(ref.c_str());
+	textBox3->Text = gcnew String(ref.c_str());	
 }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) 
 {
@@ -1791,7 +1555,7 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 		{
 			vplus1 = RK4(x, v, h);
 			vcap = Vn1cap(x, v, h);
-			S = CS(vcap, vplus1);
+			S = CS1(vcap, vplus1);
 			//Без контроля локальной погрешности----------------------------------
 			x = xInc(x, h);
 
