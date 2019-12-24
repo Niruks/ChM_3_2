@@ -9,15 +9,13 @@ double* RK4System(double x, double *vn, double h)
 	vnplus1 = new double[2];
 	
 		k1 = f1(vn[1]);
-		k2 = f1(vn[1] + (h / 4.0)*k1);
-		k3 = f1(vn[1] + (h / 2.0)*k2);
-		k4 = f1(vn[1] + h*(k1 - 2 * k2 + 2 * k3));
-
 		q1 = f2(vn[0], vn[1]);
-		q2 = f2(vn[0] + (h / 4.0)*q1, vn[1] + (h / 4.0)*q1);
-		q3 = f2(vn[0] + (h / 2.0)*q2, vn[1] + (h / 2.0)*q2);
-		q4 = f2(vn[0] + h*(q1 - 2 * q2 + 2 * q3), vn[1] + h*(q1 - 2 * q2 + 2 * q3));
-
+		k2 = f1(vn[1] + (h / 4.0)*q1);
+		q2 = f2(vn[0] + (h / 4.0)*k1, vn[1] + (h / 4.0)*q1);
+		k3 = f1(vn[1] + (h / 2.0)*q2);
+		q3 = f2(vn[0] + (h / 2.0)*k2, vn[1] + (h / 2.0)*q2);
+		k4 = f1(vn[1] + h*(q1 - 2 * q2 + 2 * q3));						
+		q4 = f2(vn[0] + h*(k1 - 2 * k2 + 2 * k3), vn[1] + h*(q1 - 2 * q2 + 2 * q3));
 
 		vnplus1[0] = vn[0] + (h / 6.0)*(k1 + 4 * k3 + k4);
 		vnplus1[1] = vn[1] + (h / 6.0)*(q1 + 4 * q3 + q4);	
